@@ -1,0 +1,65 @@
+\documentclass[a4paper, 11pt]{article}
+\usepackage{comment} % enables the use of multi-line comments (\ifx \fi)
+\usepackage{lipsum} %This package just generates Lorem Ipsum filler text.
+\usepackage{fullpage} % changes the margin
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage[ruled]{algorithm2e}
+\begin{document}
+%Header-Make sure you update this information!!!!
+\noindent
+\large\textbf{Assignment1 Report} \hfill \textbf{Yunjie Cao} \\
+%\normalsize ECE 100-003 \hfill Teammates: Student1, Student2 \\
+%Prof. Oruklu \hfill Lab Date: XX/XX/XX \\
+%TA: Adam Sumner \hfill Due Date: XX/XX/XX
+
+\large\textbf{Search-The Reversi Game}
+
+\section*{Introduction of this program}
+This program can play a full Reversi game. Two players are the computer and a person. The computer's moves are made according the search result. The person's moves are provided to the program by the input. We can select the player for the computer and set the time limit for a response. When it is the person's turn to move, the program will list all the legal moves for the person. After every move, the program will show the current state of this game. In the end, the program will announce the winner and exit gracefully.
+
+\section*{Program Input}
+Upon running this program, we should select the player for the computer. Now we should input a number as our selection. 1 means white player and 2 means dark player. After that, we should predefine the time limit within which a response should be given. The input is an integer and it determines the search depth. After that, the Reversi game will start. The person's moves are provided to the program by input. The input is the standard move notation, i.e. XY where X is one of a-h (column) and Y is one of 1-8 (row). a 5 is a legal input. There is a space between the character(a-h) and the integer(1-8).
+
+\section*{Program Output}
+
+This program implements a full Reversi game so the output of this program has two parts. Each part is output after the move of person or the computer. Before the person moves, the program will output all the legal moves for the person. After the person input his move, the program will show the current state of the game after this move. '\#' means blank, 'd' means dark chess and 'w' means white chess. The computer will move according to the search result and its move and state after the move will be also be output. An example is shown in Fig \ref{fig:one}.
+
+\begin{figure}[!htbp]
+  \includegraphics[scale=0.5]{output.png}
+  \caption{Output example}
+  \label{fig:one}
+\end{figure}
+
+
+\section*{Design and Implementation}
+\subsection{Algorithm}
+In this program, the computer's move is calculated by the search algorithm. Min-max adversarial search algorithm with the alpha-beta pruning introduced is used to generate the move of the computer. When it's the computer's turn to move, it will iterate all the legal moves and use the search algorithm to get the heuristic value of this move. It will choose the maximum one as its next move. The evaluation function is defined as the following:
+\begin{equation}
+\label{eqn:09}
+V(node) = N_{computer} - N_{person}
+\end{equation}
+
+$N_{computer}$ means the number of chesses held by the computer and $N_{person}$ means the number of chesses held by the person.
+
+\subsection{Implementation}
+Assume that the computer is the white player and the person is the dark player. According to the rule, the person moves first and the computer moves next. The implementation of this program can be shown in algorithm~\ref{alg:one}
+\begin{algorithm}[!htbp]
+\SetAlgoNoLine
+\Repeat{End of the game}{
+GenerateLegalMoves(); //generate possible moves for the person\\
+PersonInput(); //person inputs his move\\
+ChangeBoard(); //change the board according to person's move\\
+Visualize(); //visualize the current state of the board\\
+ComputerMove(); //Search the move for the computer\\
+ChangeBoard(); //change the board according to computer's move\\
+Visualize(); //visualize the current state of the board
+}
+\caption{Game procedure}
+\label{alg:one}
+\end{algorithm}
+
+The most important parts are implemented in the $ComputerMove()$. When the computer starts search, it is the MaxPlayer and his child nodes are MinPlayers. This is how the Min-max algorithm used in this program. The alpha-beta pruning is also introduced to improve the efficiency and a depth limit is set according to the predefined time limit to limit the depth of search. Details of this program can be seen from the Assignment1.cpp file on path: Using the command ./Assignment1 and this program can be run and tested in the case that the input is as described in the Program Input section and all the inputs are valid, i.e. the character is between a-h and it is lowercase.
+
+
+\end{document}
