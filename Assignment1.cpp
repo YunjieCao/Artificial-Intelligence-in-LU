@@ -2,9 +2,10 @@
 #include<vector>
 #include<stdio.h>
 #include<set>
+#include<string>
 using namespace std;
 int board[8][8];//0 means empty, 1 means white, 2 means dark
-int dark, white, chess;
+int time_limit;
 int self_side;
 int dir[8][2] = {1,-1,1,1,-1,1,-1,1,1,0,-1,0,0,1,0,-1};
 int minSearch(int depth, int alpha, int Player);
@@ -17,7 +18,6 @@ void changeColor(int i, int j, int nowPlayer, set<int>&colorchange);//get the co
 void computer_move(int Player);
 void person_move(int Player);
 void visulize();
-//改变颜色后是否需要重新修改，一直到棋盘不发生变化？
 int whether_end()
 {
     int dark_n = 0;
@@ -117,7 +117,6 @@ bool check(int i, int j, int nowPlayer)
 
 void getLegalMove(int nowPlayer, set<int>&legal_move)
 {
-    //set<int>legal_move;
     for(int i=0;i<8;i++)
     {
         for(int j=0;j<8;j++)
@@ -184,15 +183,11 @@ int main()
     board[4][4]=1;
     board[3][4]=2;
     board[4][3]=2;
-    dark = 2;
-    white = 2;
-    chess = 4;
     cout<<"This is the Reversi Game."<<endl;
     cout<<"Please select dark or white player for the search algorithm. 1:white 2:black"<<endl;
     cin>>self_side;
     cout<<"please predefine the time limit"<<endl;
-    int time = -1;
-    cin>>time;
+    cin>>time_limit;
     if (self_side==1){
         cout<<"The computer is white player and you are the dark player. You move first."<<endl;
     }
@@ -220,12 +215,14 @@ int main()
         if(self_side==1)//you input first, you are dark and computer is white
         {
             person_move(2);
+            visulize();
             computer_move(1);//computer is white
             visulize();
         }
         else//you are white and computer is dark
         {
             computer_move(2);
+            visulize();
             person_move(1);
             visulize();
         }
@@ -302,20 +299,22 @@ int maxSearch(int depth, int beta, int Player)
 void person_move(int Player)
 {
     set<int>dark_legal_move;
-    int nexti,nextj;
+    int nexti, nextj;
+    char nextI;
     getLegalMove(Player, dark_legal_move);
     if (dark_legal_move.empty())return;
     set<int>::iterator iter = dark_legal_move.begin();
     cout<<"Your legal move: ";
     while(iter!=dark_legal_move.end()){
-        cout<<"("<<*iter/10<<" "<<*iter%10<<") ";
-        nexti = *iter/10;
-        nextj = *iter%10;
+        //cout<<"("<<*iter/10<<" "<<*iter%10<<") ";
+        cout<<"("<<char(*iter%10+'a')<<" "<<*iter/10+1<<") ";
         iter++;
     }
 
-    //cout<<"please enter your move"<<endl;
-    //cin>>nexti>>nextj;
+    cout<<"please enter your move"<<endl;
+    cin>>nextI>>nextj;//(column,row) i=row j=col
+    nexti = nextj-1;//row
+    nextj = nextI-'a';//col
     //cout<<nexti<<nextj;
     set<int>white2dark;
     changeColor(nexti, nextj, Player, white2dark);
@@ -323,12 +322,12 @@ void person_move(int Player)
 
 void computer_move(int Player)
 {
-    set<int>white_legal_move;//电脑执白能走的
+    set<int>white_legal_move;
     getLegalMove(Player, white_legal_move);
     set<int>::iterator iter = white_legal_move.begin();
     int best = -99999999;
     int nextMove = -1;
-    int depth = 6;
+    int depth = max(time_limit,6);
     int nextPlayer = -1;
     if(Player==1)nextPlayer=2;
     else nextPlayer=1;
@@ -358,7 +357,9 @@ void computer_move(int Player)
     if (nextMove>=0){
         set<int>dark2white;
         changeColor(nextMove/10, nextMove%10, Player, dark2white);
-        cout<<"computer move ("<<nextMove/10<<" "<<nextMove%10<<")"<<endl;
+        //cout<<"computer move ("<<nextMove/10<<" "<<nextMove%10<<")"<<endl;
+        cout<<"computer move "<<char(nextMove%10+'a')<<" "<<nextMove/10+1<<endl;
+
     }
 }
 
