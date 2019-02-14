@@ -18,6 +18,8 @@ void changeColor(int i, int j, int nowPlayer, set<int>&colorchange);//get the co
 void computer_move(int Player);
 void person_move(int Player);
 void visulize();
+bool ComputerStuck;
+bool PersonStuck;
 int whether_end()
 {
     int dark_n = 0;
@@ -39,7 +41,7 @@ int whether_end()
             }
         }
     }
-    if(dark_n==0||white_n==0||n==64){
+    if(dark_n==0||white_n==0||n==64||(ComputerStuck&&PersonStuck)){
         if(dark_n<white_n){
             return 1;
         }
@@ -194,6 +196,8 @@ int main()
     else{
         cout<<"The computer is dark player and you are the white player. The computer moves first"<<endl;
     }
+    ComputerStuck = false;
+    PersonStuck = false;
     while(1){
         int current = whether_end();
         if(current!=0)
@@ -212,6 +216,8 @@ int main()
             }
             break;
         }
+        ComputerStuck = true;
+        PersonStuck = true;
         if(self_side==1)//you input first, you are dark and computer is white
         {
             person_move(2);
@@ -303,6 +309,7 @@ void person_move(int Player)
     char nextI;
     getLegalMove(Player, dark_legal_move);
     if (dark_legal_move.empty())return;
+    PersonStuck = false;
     set<int>::iterator iter = dark_legal_move.begin();
     cout<<"Your legal move: ";
     while(iter!=dark_legal_move.end()){
@@ -355,6 +362,7 @@ void computer_move(int Player)
         iter++;
     }
     if (nextMove>=0){
+        ComputerStuck = false;
         set<int>dark2white;
         changeColor(nextMove/10, nextMove%10, Player, dark2white);
         //cout<<"computer move ("<<nextMove/10<<" "<<nextMove%10<<")"<<endl;
