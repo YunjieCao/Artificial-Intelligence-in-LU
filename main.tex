@@ -6,24 +6,31 @@
 \usepackage{graphicx}
 \usepackage[ruled]{algorithm2e}
 \begin{document}
-%Header-Make sure you update this information!!!!
+% Header-Make sure you update this information!!!!
 \noindent
-\large\textbf{Assignment1 Report} \hfill \textbf{Yunjie Cao} \\
+\large\textbf{Assignment 1 Report} \hfill \textbf{Yunjie Cao and Minjia Jin}\\
 %\normalsize ECE 100-003 \hfill Teammates: Student1, Student2 \\
 %Prof. Oruklu \hfill Lab Date: XX/XX/XX \\
 %TA: Adam Sumner \hfill Due Date: XX/XX/XX
 
-\large\textbf{Search-The Reversi Game}
+\large\textbf{Search: The Reversi Game}
 
-\section*{Introduction of this program}
-This program can play a full Reversi game. Two players are the computer and a person. The computer's moves are made according the search result. The person's moves are provided to the program by the input. We can select the player for the computer and set the time limit for a response. When it is the person's turn to move, the program will list all the legal moves for the person. After every move, the program will show the current state of this game. In the end, the program will announce the winner and exit gracefully.
+\section*{Introduction}
+This program allows the user to play a full Othello game against a computer. The computer's moves are made according the search result, which is obtained using the Minimax algorithm together with Alpha-Beta pruning. The person's moves are provided to the program through keyboard input. We can select for the computer the colour it will play and set a time limit for its response. When it is the person's turn to move, the program will list all the legal moves for the person. After every move, the program will show the current state of this game. In the end, the program will announce the winner and exit gracefully.
 
 \section*{Program Input}
-Upon running this program, we should select the player for the computer. Now we should input a number as our selection. 1 means white player and 2 means dark player. After that, we should predefine the time limit within which a response should be given. The input is an integer and it determines the search depth. After that, the Reversi game will start. The person's moves are provided to the program by input. The input is the standard move notation, i.e. XY where X is one of a-h (column) and Y is one of 1-8 (row). a 5 is a legal input. There is a space between the character(a-h) and the integer(1-8).
+Upon running this program, the user selects the colour the computer should play as. This is done by entering a number: 1 means the computer plays as the white player and 2 means it is the dark player. After that, the user defines the time limit within which the computer should respond. The input is an integer and it determines the search depth.
+\\
+\\
+Now, the Othello game starts. In every round, the user's move is provided to the program using the keyboard, where the input is the standard move notation, i.e. "X Y" where X is one of a-h (column) and Y is one of 1-8 (row). For example, "a 5" is a legal input. Note that there is a space between the character (a-h) and the integer (1-8).
 
 \section*{Program Output}
-
-This program implements a full Reversi game so the output of this program has two parts. Each part is output after the move of person or the computer. Before the person moves, the program will output all the legal moves for the person. After the person input his move, the program will show the current state of the game after this move. '\#' means blank, 'd' means dark chess and 'w' means white chess. The computer will move according to the search result and its move and state after the move will be also be output. An example is shown in Fig \ref{fig:one}.
+There are two parts to the output of the program.
+\\
+\\
+First, before the user makes a move, the program will present all the possible moves for the user.
+\\\\
+Second, after every move, the current state of the game will be shown in the form of a grid. The symbols used are '\#', which means blank, 'd', which means a dark piece, and 'w', which means a white piece. An example of the game state visualisation is shown in Fig \ref{fig:one}.
 
 \begin{figure}[!htbp]
   \includegraphics[scale=0.5]{output.png}
@@ -31,35 +38,36 @@ This program implements a full Reversi game so the output of this program has tw
   \label{fig:one}
 \end{figure}
 
-
 \section*{Design and Implementation}
-\subsection{Algorithm}
-In this program, the computer's move is calculated by the search algorithm. Min-max adversarial search algorithm with the alpha-beta pruning introduced is used to generate the move of the computer. When it's the computer's turn to move, it will iterate all the legal moves and use the search algorithm to get the heuristic value of this move. It will choose the maximum one as its next move. The evaluation function is defined as the following:
+\subsection{Algorithm and Evaluation Function}
+In this program, the computer's optimal move is calculated by the search algorithm. Minimax adversarial search algorithm with Alpha-Beta pruning introduced is used to generate the computer's moves. When it is the computer's turn to move, it will iterate through all its possible moves and use the search algorithm to obtain the heuristic value of this move. It will then choose the move that gives it the best value - the largest value obtained - as its next move. The evaluation function is defined as the following:
 \begin{equation}
 \label{eqn:09}
 V(node) = N_{computer} - N_{person}
 \end{equation}
 
-$N_{computer}$ means the number of chesses held by the computer and $N_{person}$ means the number of chesses held by the person.
+$N_{computer}$ means the number of pieces held by the computer and $N_{person}$ means the number of pieces held by the person.
 
 \subsection{Implementation}
-Assume that the computer is the white player and the person is the dark player. According to the rule, the person moves first and the computer moves next. The implementation of this program can be shown in algorithm~\ref{alg:one}
+Assume that the computer is the white player and the person is the dark player. As the dark player starts first, the person moves first and the computer moves next. The implementation of this program can be shown in algorithm~\ref{alg:one}
 \begin{algorithm}[!htbp]
 \SetAlgoNoLine
 \Repeat{End of the game}{
 GenerateLegalMoves(); //generate possible moves for the person\\
-PersonInput(); //person inputs his move\\
-ChangeBoard(); //change the board according to person's move\\
-Visualize(); //visualize the current state of the board\\
-ComputerMove(); //Search the move for the computer\\
-ChangeBoard(); //change the board according to computer's move\\
-Visualize(); //visualize the current state of the board
+PersonInput();  //person inputs his move\\
+ChangeBoard();  //update the board according to person's move\\
+Visualize();    //visualise the current state of the board\\
+ComputerMove(); //search for a move for the computer\\
+ChangeBoard();  //update the board according to computer's move\\
+Visualize();    //visualise the current state of the board
 }
 \caption{Game procedure}
 \label{alg:one}
 \end{algorithm}
 
-The most important parts are implemented in the $ComputerMove()$. When the computer starts search, it is the MaxPlayer and his child nodes are MinPlayers. This is how the Min-max algorithm used in this program. The alpha-beta pruning is also introduced to improve the efficiency and a depth limit is set according to the predefined time limit to limit the depth of search. Details of this program can be seen from the Assignment1.cpp file on path: Using the command ./Assignment1 and this program can be run and tested in the case that the input is as described in the Program Input section and all the inputs are valid, i.e. the character is between a-h and it is lowercase.
+The most important elements used in best computer move calculation are implemented in the function $ComputerMove()$. When the computer starts searching for the optimal move, it is the MaxPlayer and his child nodes are MinPlayers. This is how the Min-max algorithm used in this program. Alpha-Beta pruning is also introduced to improve the efficiency of the search and a depth limit is set according to the predefined time limit to limit the depth of search. \\
+
+Details of this program can be seen from the Assignment1.cpp file, which is in the directory: /h/d3/x/mi3774ji-s/Documents/AppliedAI/assignment1. Using the command ./Assignment1, this program can be run and tested in the case that the input is as described in the Program Input section and all the inputs are valid, i.e. the character is between a-h and it is lowercase.
 
 
 \end{document}
