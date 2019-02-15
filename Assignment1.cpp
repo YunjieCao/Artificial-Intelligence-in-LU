@@ -379,10 +379,6 @@ void visulize()
     {
         for(int j=0;j<8;j++)
         {
-            if (board[i][j]==-1){
-                cout<<"?";
-                continue;
-            }
             if(board[i][j]==0)
                 cout<<"#";
             else if(board[i][j]==1)
