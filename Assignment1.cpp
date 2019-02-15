@@ -7,11 +7,11 @@ using namespace std;
 int board[8][8];//0 means empty, 1 means white, 2 means dark
 int time_limit;
 int self_side;
-int dir[8][2] = {1,-1,1,1,-1,1,-1,1,1,0,-1,0,0,1,0,-1};
+int dir[8][2] = {1,-1, 1,1, -1,1, -1,-1, 1,0, -1,0, 0,1, 0,-1};
 int minSearch(int depth, int alpha, int Player);
 int maxSearch(int depth, int beta, int Player);
 void getLegalMove(int nowPlayer, set<int>&legal_move);//generate legal moves for nowPlayer
-bool check(int i, int j, int nowPlayer);//check whether legal
+bool check(int backi, int backj, int i, int j, int nowPlayer);//check whether legal
 int whether_end();//whether the game is over and who wins. 0: not end 1:white wins 2:dark wins 3: draw
 int evaluation(int self_side);//get the evaluation value based on different side
 void changeColor(int i, int j, int nowPlayer, set<int>&colorchange);//get the color changed positions
@@ -85,34 +85,44 @@ int evaluation(int self_side)
     }
 }
 
-bool check(int i, int j, int nowPlayer)
+bool check(int backi, int backj, int i, int j, int nowPlayer)
 {
     if(i<0||i>=8||j<0||j>=8)return false;
     if(board[i][j]!=0)return false;
-    for(int d=0;d<8;d++){
-        int tempi = i;
-        int tempj = j;
-        bool ifdifferent = false;
-        bool ifsame = false;
-        while(true)
-        {
-            tempi += dir[d][0];
-            tempj += dir[d][1];
-            if (tempi<0||tempi>=8||tempj<0||tempj>=8)break;
-            if(board[tempi][tempj]==0){
-                break;
-            }
-            else if(board[tempi][tempj]==nowPlayer){
-                if(ifdifferent){
-                    ifsame = true;
-                    return true;
-                }
-            }
-            else if(board[tempi][tempj]!=nowPlayer){
-                ifdifferent = true;
+    int diri = backi-i;
+    int dirj = backj-j;
+    int tempi = backi;
+    int tempj = backj;
+    bool ifdifferent = true;
+    bool ifsame = false;
+    if (backi==4 && backj==3){
+        cout<<"**************************"<<endl;
+        cout<<i<<j<<endl;
+        int tttt = board[backi][backj];
+        board[backi][backj]=-1;
+        visulize();
+        board[backi][backj] = tttt;
+    }
+
+    while(true)
+    {
+        tempi += diri;
+        tempj += dirj;
+        if (tempi<0||tempi>=8||tempj<0||tempj>=8)break;
+        if(board[tempi][tempj]==0){
+            break;
+        }
+        else if(board[tempi][tempj]==nowPlayer){
+            if(ifdifferent){
+                ifsame = true;
+                return true;
             }
         }
+        else if(board[tempi][tempj]!=nowPlayer){
+            ifdifferent = true;
+        }
     }
+
     return false;
 }
 
@@ -129,7 +139,7 @@ void getLegalMove(int nowPlayer, set<int>&legal_move)
                 {
                     int tempi = i+dir[d][0];
                     int tempj = j+dir[d][1];
-                    if(check(tempi, tempj, nowPlayer))
+                    if(check(i, j, tempi, tempj, nowPlayer))
                     {
                         legal_move.insert(tempi*10+tempj);
                     }
@@ -378,6 +388,10 @@ void visulize()
     {
         for(int j=0;j<8;j++)
         {
+            if (board[i][j]==-1){
+                cout<<"?";
+                continue;
+            }
             if(board[i][j]==0)
                 cout<<"#";
             else if(board[i][j]==1)
