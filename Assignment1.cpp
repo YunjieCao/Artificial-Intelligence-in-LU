@@ -334,7 +334,7 @@ void computer_move(int Player)
     set<int>::iterator iter = white_legal_move.begin();
     int best = -99999999;
     int nextMove = -1;
-    int depth = max(time_limit,6);
+    int depth = min(max(time_limit,6),10);
     int nextPlayer = -1;
     if(Player==1)nextPlayer=2;
     else nextPlayer=1;
