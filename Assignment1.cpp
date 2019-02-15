@@ -95,15 +95,6 @@ bool check(int backi, int backj, int i, int j, int nowPlayer)
     int tempj = backj;
     bool ifdifferent = true;
     bool ifsame = false;
-    if (backi==4 && backj==3){
-        cout<<"**************************"<<endl;
-        cout<<i<<j<<endl;
-        int tttt = board[backi][backj];
-        board[backi][backj]=-1;
-        visulize();
-        board[backi][backj] = tttt;
-    }
-
     while(true)
     {
         tempi += diri;
