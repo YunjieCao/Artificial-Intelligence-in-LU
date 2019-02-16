@@ -13,7 +13,7 @@
 %Prof. Oruklu \hfill Lab Date: XX/XX/XX \\
 %TA: Adam Sumner \hfill Due Date: XX/XX/XX
 
-\large\textbf{Search: The Reversi Game}
+\large\textbf{Search: The Othello Game}
 
 \section*{Introduction}
 This program allows the user to play a full Othello game against a computer. The computer's moves are made according the search result, which is obtained using the Minimax algorithm together with Alpha-Beta pruning. The person's moves are provided to the program through keyboard input. We can select for the computer the colour it will play and set a time limit for its response. When it is the person's turn to move, the program will list all the legal moves for the person. After every move, the program will show the current state of this game. In the end, the program will announce the winner and exit gracefully.
@@ -33,6 +33,7 @@ First, before the user makes a move, the program will present all the possible m
 Second, after every move, the current state of the game will be shown in the form of a grid. The symbols used are '\#', which means blank, 'd', which means a dark piece, and 'w', which means a white piece. An example of the game state visualisation is shown in Fig \ref{fig:one}.
 
 \begin{figure}[!htbp]
+  \centering
   \includegraphics[scale=0.5]{output.png}
   \caption{Output example}
   \label{fig:one}
@@ -65,9 +66,10 @@ Visualize();    //visualise the current state of the board
 \label{alg:one}
 \end{algorithm}
 
-The most important elements used in best computer move calculation are implemented in the function $ComputerMove()$. When the computer starts searching for the optimal move, it is the MaxPlayer and his child nodes are MinPlayers. This is how the Min-max algorithm used in this program. Alpha-Beta pruning is also introduced to improve the efficiency of the search and a depth limit is set according to the predefined time limit to limit the depth of search. \\
+The most important elements used in best computer move calculation are implemented in the function $ComputerMove()$.
+In the program, the computer is always the maximiser, in that it selects moves that maximise the score of the game at the depth limit. This is facilitated by the evaluation function as above in $evaluation()$. To do so, the computer analyses the potential moves by the user in response to its own potential move, and derives the minimum score among the user's $N$ potential moves, say $x_n$ (for n = 1..$N$). Then the computer chooses the move that gives it the highest score among the $x_n$ scores. This is how the Minimax algorithm used in this program. Alpha-Beta pruning is also introduced to improve the efficiency of the search and a depth limit is set according to the predefined time limit to limit the depth of search. \\
 
-Details of this program can be seen from the Assignment1.cpp file, which is in the directory: /h/d3/x/mi3774ji-s/Documents/AppliedAI/assignment1. Using the command ./Assignment1, this program can be run and tested in the case that the input is as described in the Program Input section and all the inputs are valid, i.e. the character is between a-h and it is lowercase.
+Details of this program can be found in the Assignment1.cpp file, which is in the directory: /h/d3/x/mi3774ji-s/Documents/AppliedAI/assignment1. Using the command ./Assignment1, this program can be run and tested in the case that the input is as described in the Program Input section and all the inputs are valid, i.e. the character is between a-h and it is lowercase.
 
 
 \end{document}

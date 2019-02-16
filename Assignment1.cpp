@@ -106,7 +106,9 @@ bool check(int i, int j, int nowPlayer)
                 if(ifdifferent){
                     ifsame = true;
                     return true;
-                }
+                } else {
+			break;
+		}
             }
             else if(board[tempi][tempj]!=nowPlayer){
                 ifdifferent = true;
