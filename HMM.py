@@ -19,7 +19,7 @@ def getTransitionProb():
         P_dir = p%4
         i = int(int(p/4)/8)
         j = int(p/4)%8
-        if i>0 and i<7 and j>0 and j<7:# not encountering a wall
+        if i>0 and i<7 and j>0 and j<7:  # not encountering a wall
             for d in range(4):
                 nexti = i + dir_[d][0]
                 nextj = j + dir_[d][1]
@@ -96,25 +96,35 @@ def main():
     HistorySensor = []
     states = [i for i in range(256)]
     start_prob = [1.0/256.0 for i in range(256)]
+    error = 0
     while(cnt<MaxLoop and NotFind):
         now_state = (now_i*8+now_j)*4+now_head
         next_state = moveRobot(transition_prob, now_state)
         next_position = int(next_state/4)
-        print("next postion is ({}, {})".format(int(int(next_state/4)/8), int(next_state/4)%8))
-        observed_state = obtainSensor(emission_prob, now_state)
+        next_i = int(int(next_state/4)/8)
+        next_j = int(next_state/4)%8
+        next_head = next_state%4
+        print("next postion is ({}, {})".format(next_i, next_j))
+        observed_state = obtainSensor(emission_prob, next_state)
         if observed_state==64:
-            print("nothing")
+            print("sensor nothing")
         else:
             print("sensor ({}, {})".format(int(observed_state/8), observed_state%8))
         HistorySensor.append(observed_state)
         LocatePosition = LocateRobot(HistorySensor, states, start_prob, transition_prob, emission_prob)
         print("Locate ({}, {})".format(int(LocatePosition / 8), LocatePosition % 8))
         cnt+=1
+        error = error + abs(int(LocatePosition/8)-next_i) + abs(LocatePosition%8-next_j)
         if LocatePosition==next_position:
             print("successfully locate robot in {} steps!".format(cnt))
+            print("average Manhattan distance {}".format(error/cnt))
             NotFind = False
+        now_i = now_i
+        now_j = now_j
+        now_head = next_head
     if NotFind:
         print("fail to locate in {} steps".format(MaxLoop))
+    return error/cnt
 
 
 def moveRobot(transition_prob, now_state):
@@ -195,4 +205,7 @@ def LocateRobot(obs, states, start_p, trans_p, emit_p):
 
 
 if __name__=="__main__":
-    main()
+    evaluation = 0
+    for i in range(100):
+        evaluation += main()
+    print("accuracy is {}".format(evaluation/100))
