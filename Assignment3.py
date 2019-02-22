@@ -5,7 +5,7 @@
 # @Software: PyCharm
 # @Email   ：YunjieCao@hotmail.com
 
-
+# path = '/h/d6/q/yu1764ca-s/assignment3'
 import matplotlib.pyplot as plt
 import numpy as np
 import random
