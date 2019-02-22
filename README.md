@@ -1,2 +1,2 @@
 # Courses2019Spring
-homework assignment for Applied Artificial Intelligence
+homework assignments for Applied Artificial Intelligence in Lund University
