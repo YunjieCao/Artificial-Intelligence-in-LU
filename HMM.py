@@ -5,6 +5,7 @@
 # @Software: PyCharm
 # @Email   ：YunjieCao@hotmail.com
 
+# path = '/h/d6/q/yu1764ca-s/assignment2'
 import random
 # 8 * 8 grid
 # 0:north 1:south 2:west 3:east
