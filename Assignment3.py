@@ -9,6 +9,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import random
+import copy
 """
 1. a linear regression program using gradient descent
 2. linear classifiers using the perceptron algorithm and logistic regression.
@@ -49,6 +50,10 @@ def linearRegression(x, y):
 
 
 def batchGradientDescend(x, y):
+    """
+    using the whole dataset as a batch
+    visualize the result in BGDx.jpg
+    """
     plt.scatter(x,y)
     x = np.array(x).reshape(m, 1)
     x0 = np.ones((m, 1))
@@ -74,6 +79,10 @@ def batchGradientDescend(x, y):
 
 
 def stochasticGradientDescend(x, y):
+    """
+    randomly choose a data to train
+    visualize the result in SGDx.jpg
+    """
     loss = float("inf")
     eps = 1e-4
     alpha = 0.01
@@ -102,6 +111,9 @@ def stochasticGradientDescend(x, y):
 
 
 def generateLIBSVM():
+    """
+    generate file containing data in LIBSVM format
+    """
     X = xE+xF
     Y = yE+yF
     scale_x = [(x - min(X)) / (max(X) - min(X)) for x in X]
@@ -119,6 +131,10 @@ def generateLIBSVM():
 
 # read data in LIBSVM format
 def readLIBSVM(dataset):
+    """
+    read LIBSVM format data
+    :return: [[x0, x1, y]...]
+    """
     train_data = []
     for line in open(dataset, 'r'):
         to_add = []
@@ -137,6 +153,11 @@ def readLIBSVM(dataset):
 
 
 def Perceptron(TrainData):
+    """
+    Linear classifier using perceptron algorithm
+    evaluate the algorithm using leave-one-out cross validation
+    Data : (x0, x1, 1) or (x0, x1, -1)
+    """
     def sign(v):
         if v>=0:
             return 1
@@ -163,6 +184,9 @@ def Perceptron(TrainData):
                 bias = bias + learning_rate * y
             wrong = 0
             corrrect = 0
+            """
+            loss function: L = -y * sign(wx+b)
+            """
             for i in range(len(train_datas)):
                 train = train_datas[i]
                 x1, x2, y = train
@@ -171,96 +195,75 @@ def Perceptron(TrainData):
                     wrong += 1
                 else:
                     corrrect += 1
-            if len(train_datas)-corrrect<=eps:
+            if len(train_datas)-corrrect<=eps: # stop criterion
                 break
         train = TrainData[0]
         x1, x2, y = train
         predict = sign(weight[0] * x1 + weight[1] * x2 + bias)
         if y * predict >0:
             correctCnt+=1
-    print('Perceptron leave-one-out accuracy {}'.format(correctCnt/LeaveLimit))
+    print('Perceptron leave-one-out cross validation accuracy {}'.format(correctCnt/LeaveLimit))
 
 
 def LogicRegression(Data):
     """
-    :param Data:  label 1, -1
-    :return: accuracy
+    Linear classifier using logistic regression algorithm
+    Stochastic optimizer
+    evaluate the algorithm using leave-one-out cross validation
+    Data: (x0, x1, 1) or (x0, x1, 0)
     """
-    def sigmoid(z):
-        return 1.0/(1+np.exp(-z))
-    LeaveLimit = 50
-    M = len(Data)
-    correctCnt = 0
-    wrongCnt = 0
-    batch_size = 5
-    threshold = 0.5
-    train_batch_cnt = 1e3
-    learning_rate = 0.001
-    MaxIter = 1e2
-    f = open('LogicRe.txt','w')
-    for k in range(LeaveLimit): # leave-one-out cross validation
-        train_cnt = 0
-        weights = np.zeros((3, 1))  # (n,1)
-        random.shuffle(Data)
-        leave_out = random.randint(0,M-1)
-        # train batches
-        while train_cnt < train_batch_cnt:
-            candidate = []
-            start = random.randint(0,M-1)
-            step = 0
-            while len(candidate)<batch_size:
-                if ((start+step)%M!=leave_out):
-                    candidate.append((start+step)%M)
-                step+=1
-            train_cnt += 1
-            TrainData = []
-            for j in candidate:
-                TrainData.append(Data[j])
-            dataIn = []
-            dataLabel = []
-            # traindata [batch_size, 2]
-            for i in range(len(TrainData)):
-                dataIn.append([TrainData[i][0], TrainData[i][1]])
-                if TrainData[i][2]==1:
-                    dataLabel.append(0)
-                else:
-                    dataLabel.append(1)
-            m = len(TrainData)
-            dataIn = np.array(dataIn).reshape([m,2])
-            dataLabel = np.array(dataLabel).reshape([m,1])
-            dataIn = np.insert(dataIn, 0, 1, axis=1)  #(m,n)
-            m, n = dataIn.shape
-            cnt = 0
-            # update weights according to this batch
-            while cnt<MaxIter:
-                h = sigmoid(np.dot(dataIn, weights))
-                weights = weights + learning_rate * np.dot(np.transpose(dataIn), (dataLabel-h))/m
-                cnt+=1
-        _x = np.array([1, Data[leave_out][0], Data[leave_out][1]]).reshape((1,3))
-        predict_y = sigmoid(np.dot(_x, weights))
-        if predict_y>=threshold:
-            predict_y = 1
-        else:
-            predict_y = 0
-        label = 1
-        if Data[leave_out][2]==1:
-            label = 0
-        f.write("predict: {} label: {}\n".format(predict_y, label))
-        print("predict: {} label: {}\n".format(predict_y, label))
-        if predict_y==label:
-            correctCnt+=1
-        else:
-            wrongCnt+=1
-    print("logistic regression leave-one-out cross validation accuracy is {}".format(correctCnt/LeaveLimit))
-    f.close()
 
+    def sigmoid(z):
+        return 1 / (1 + np.exp(-z))
+
+    dataIn = []
+    dataLabel = []
+    for d in Data:
+        x, y, l = d
+        if l == 1:
+            dataIn.append([x, y])
+            dataLabel.append(1)
+        else:
+            dataIn.append([x, y])
+            dataLabel.append(0)
+    correctCnt = 0
+    M = len(dataIn)
+    for i in range(M):
+        leave_one_out_in = [dataIn[i]]
+        leave_one_out_label = [dataLabel[i]]
+        tempin = copy.deepcopy(dataIn)
+        templabel = copy.deepcopy(dataLabel)
+        del dataIn[i]
+        del dataLabel[i]
+        dataIn = np.mat(np.insert(dataIn, 0, 1, axis=1))  # (m,n)
+        dataLabel = np.mat(dataLabel).transpose()  # (m,1)
+        leave_one_out_in = np.mat(np.insert(leave_one_out_in, 0, 1, axis=1))
+        leave_one_out_label = np.mat(leave_one_out_label).transpose()
+        m, n = dataIn.shape
+        weights = np.zeros((n, 1))
+        learning_rate = 0.01
+        maxIter = 10000
+        """
+        loss function: L = -y * log(y_hat) - (1-y) * log(1-y_hat)
+        """
+        for i in range(maxIter):
+            y_hat = sigmoid(dataIn * weights)
+            weights = weights + learning_rate * dataIn.transpose() * (dataLabel - y_hat)
+        predict = sigmoid(leave_one_out_in * weights)
+        predict[predict >= 0.5] = 1
+        predict[predict <= 0.5] = 0
+        if predict[0][0] == leave_one_out_label[0][0]:
+            correctCnt = correctCnt + 1
+        dataIn = tempin
+        dataLabel = templabel
+    print("Logistic Regression leave-one-out cross validation accuracy {}".format(correctCnt / M))
 
 
 if __name__=="__main__":
-    # linearRegression(scale_xE, scale_yE)
-    # DataSet = 1
-    # linearRegression(scale_xF, scale_yF)
+    linearRegression(scale_xE, scale_yE)
+    DataSet = 1
+    linearRegression(scale_xF, scale_yF)
     LIBSVM = generateLIBSVM()
     TrainData = readLIBSVM(LIBSVM)
-    #Perceptron(TrainData)
+    Perceptron(TrainData)
     LogicRegression(TrainData)
