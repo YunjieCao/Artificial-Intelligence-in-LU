@@ -120,8 +120,8 @@ def main():
             print("successfully locate robot in {} steps!".format(cnt))
             print("average Manhattan distance {}".format(error/cnt))
             NotFind = False
-        now_i = now_i
-        now_j = now_j
+        now_i = next_i
+        now_j = next_j
         now_head = next_head
     if NotFind:
         print("fail to locate in {} steps".format(MaxLoop))
